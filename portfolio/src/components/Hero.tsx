@@ -30,8 +30,8 @@ export function Hero() {
         <DottedPhotoCanvas
           src="/profile.jpg"
           alt="Jesica Suthar"
-          dotSpacing={7}
-          dotRadius={2.6}
+          dotSpacing={6}
+          dotRadius={2.8}
           width={340}
           height={400}
         />

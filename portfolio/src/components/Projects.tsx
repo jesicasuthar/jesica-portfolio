@@ -58,10 +58,17 @@ export function Projects() {
       });
   }, []);
 
-  const displayedRepos = repos.filter((r) =>
-    r.name.toLowerCase().includes(repoSearch.toLowerCase()) ||
-    (r.description && r.description.toLowerCase().includes(repoSearch.toLowerCase()))
-  );
+  const hiddenGithubRepos = new Set(['nexus', 'friendai']);
+
+  const displayedRepos = repos.filter((r) => {
+    const normalizedName = r.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (hiddenGithubRepos.has(normalizedName)) return false;
+
+    return (
+      r.name.toLowerCase().includes(repoSearch.toLowerCase()) ||
+      (r.description && r.description.toLowerCase().includes(repoSearch.toLowerCase()))
+    );
+  });
 
   return (
     <section id="projects" className="section-container">

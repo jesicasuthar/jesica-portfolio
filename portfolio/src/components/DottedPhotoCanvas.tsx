@@ -68,11 +68,19 @@ export function DottedPhotoCanvas({
           const g = px[idx + 1];
           const b = px[idx + 2];
           const a = px[idx + 3];
-          if (a < 20) continue; // skip transparent
+          if (a < 12) continue;
 
-          // Size dots by brightness — brighter = bigger dot
-          const brightness = (r + g + b) / 765;
-          const radius = dotRadius * (0.45 + brightness * 0.8);
+          const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+          const radius = dotRadius * (0.5 + brightness * 1.05);
+
+          let color = 'rgba(4, 83, 104, 0.96)';
+          if (brightness > 0.8) {
+            color = 'rgba(208, 255, 247, 0.96)';
+          } else if (brightness > 0.5) {
+            color = 'rgba(118, 228, 214, 0.88)';
+          } else if (brightness > 0.25) {
+            color = 'rgba(25, 104, 118, 0.92)';
+          }
 
           dots.push({
             x,
@@ -82,7 +90,7 @@ export function DottedPhotoCanvas({
             oy: y,
             vx: 0,
             vy: 0,
-            color: `rgba(${r},${g},${b},0.92)`,
+            color,
           });
         }
       }
@@ -120,7 +128,8 @@ export function DottedPhotoCanvas({
     let raf: number;
 
     const draw = () => {
-      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#062d3c';
+      ctx.fillRect(0, 0, width, height);
 
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
