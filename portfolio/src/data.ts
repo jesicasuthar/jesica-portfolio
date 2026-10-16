@@ -1,7 +1,7 @@
 export const GH = 'https://github.com/';
 export const LINKEDIN = 'https://www.linkedin.com/in/jesica-suthar';
 export const RESEARCHGATE = 'https://www.researchgate.net/publication/403886515_A_System_and_Method_for_Concurrent_Multi-Disease_Prediction_via_Knowledge-Guided_Graph_Neural_Networks_and_Ensemble_Learning';
-export const RESUME = '/jesica%20suthar%20resume.pdf';
+export const RESUME = '/JesicaSuthar%20Resume.pdf';
 export const EMAIL = 'jesica.s.suthar@gmail.com';
 export const PHONE = '+91 8433574004';
 export const LOCATION = 'Mumbai, India';
