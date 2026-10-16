@@ -1,302 +1,194 @@
-import { useState, useEffect } from 'react';
-import { projects, Project, GH } from '../data';
-
-interface Repo {
-  name: string;
-  html_url: string;
-  description: string | null;
-  language: string | null;
-  stargazers_count: number;
-  forks_count: number;
-  updated_at: string;
-}
+import { useState, useRef } from 'react';
+import { PROJECTS, Project } from '../data';
 
 export function Projects() {
-  const [activeFilter, setActiveFilter] = useState<string>('All');
-  const [expandedId, setExpandedId] = useState<string | null>(projects[0].name);
+  const [activeProject, setActiveProject] = useState<string>(PROJECTS[0].id);
+  const majorProject = PROJECTS.find((p) => p.id === 'major-project') as Project;
+  const otherProjects = PROJECTS.filter((p) => p.id !== 'major-project');
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  // GitHub live repos state
-  const [repos, setRepos] = useState<Repo[]>([]);
-  const [ghStatus, setGhStatus] = useState<'loading' | 'ok' | 'error' | 'empty'>('loading');
-  const [repoSearch, setRepoSearch] = useState('');
-
-  const domains = ['All', 'GenAI', 'ML', 'NLP'];
-
-  const filteredProjects = projects.filter((p) => {
-    if (activeFilter === 'All') return true;
-    return p.domain === activeFilter;
-  });
-
-  useEffect(() => {
-    const cached = sessionStorage.getItem('gh_repos_jesica');
-    if (cached) {
-      try {
-        setRepos(JSON.parse(cached));
-        setGhStatus('ok');
-        return;
-      } catch {
-        // fallback to fetch
-      }
+  const toggleVideo = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
-
-    fetch('https://api.github.com/users/jesicasuthar/repos?sort=updated&per_page=12')
-      .then((res) => {
-        if (!res.ok) throw new Error('API failed');
-        return res.json();
-      })
-      .then((data: Repo[]) => {
-        if (!Array.isArray(data) || data.length === 0) {
-          setGhStatus('empty');
-          return;
-        }
-        sessionStorage.setItem('gh_repos_jesica', JSON.stringify(data));
-        setRepos(data);
-        setGhStatus('ok');
-      })
-      .catch(() => {
-        setGhStatus('error');
-      });
-  }, []);
-
-  const hiddenGithubRepos = new Set(['nexus', 'friendai']);
-
-  const displayedRepos = repos.filter((r) => {
-    const normalizedName = r.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (hiddenGithubRepos.has(normalizedName)) return false;
-
-    return (
-      r.name.toLowerCase().includes(repoSearch.toLowerCase()) ||
-      (r.description && r.description.toLowerCase().includes(repoSearch.toLowerCase()))
-    );
-  });
+  };
 
   return (
-    <section id="projects" className="section-container">
-      <div className="section-header-tag">
-        <span className="section-num">/ 03</span>
-        <span className="section-title-label">SELECTED WORKS</span>
+    <section id="projects" className="portfolio-section projects-section">
+      <div className="section-header">
+        <span className="section-pill">Featured Engineering &amp; Research</span>
+        <h2 className="section-title">Major Project &amp; Video Walkthrough</h2>
+        <p className="section-subtitle">
+          Showcasing research publication in concurrent multi-disease clinical intelligence, along with production GenAI applications.
+        </p>
       </div>
 
-      <div className="projects-header-flex">
-        <h2 className="section-headline">
-          Featured systems &amp; <em>architectural prototypes</em>.
-        </h2>
+      {/* ── MAJOR PROJECT FEATURE CARD WITH VIDEO DEMO ── */}
+      <div className="major-project-card">
+        <div className="major-badge-strip">
+          <div className="badge-item-main">
+            <span className="live-pulse" />
+            <span>MAJOR PROJECT DEMO</span>
+          </div>
+          <span className="badge-item-sub">Published IISTJ (Co-Author)</span>
+          <span className="badge-item-sub">Year 2026</span>
+        </div>
 
-        <div className="filter-pill-group" role="group" aria-label="Filter works by domain">
-          {domains.map((domain) => (
-            <button
-              key={domain}
-              className={`filter-pill-btn ${activeFilter === domain ? 'active' : ''}`}
-              onClick={() => setActiveFilter(domain)}
-              aria-pressed={activeFilter === domain}
-            >
-              {domain}
-            </button>
-          ))}
+        <div className="major-project-grid">
+          {/* LEFT: Video Player Container */}
+          <div className="major-video-wrapper">
+            <div className="video-player-container">
+              <video
+                ref={videoRef}
+                className="major-video-element"
+                controls
+                preload="metadata"
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+              >
+                <source src={majorProject.videoSrc} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              {!isPlaying && (
+                <div className="video-overlay-banner" onClick={toggleVideo}>
+                  <div className="play-button-circle">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+                      <polygon points="6 4 20 12 6 20 6 4" />
+                    </svg>
+                  </div>
+                  <span className="overlay-text">Click to Play Major Project Demo</span>
+                </div>
+              )}
+            </div>
+
+            <div className="video-caption-bar">
+              <div className="caption-info">
+                <span className="caption-dot" />
+                <span className="caption-title">demo of major project.mp4</span>
+              </div>
+              <span className="caption-tag">Full Architecture &amp; Execution</span>
+            </div>
+          </div>
+
+          {/* RIGHT: Project Information & Metrics */}
+          <div className="major-content-wrapper">
+            <h3 className="major-title">{majorProject.title}</h3>
+            <p className="major-role-tag">{majorProject.role}</p>
+
+            <p className="major-desc">{majorProject.description}</p>
+
+            {/* Metrics cards */}
+            <div className="major-metrics-row">
+              {majorProject.metrics?.map((m) => (
+                <div key={m.label} className="metric-pill">
+                  <span className="metric-val">{m.value}</span>
+                  <span className="metric-lbl">{m.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Highlights bullet points */}
+            <div className="major-highlights">
+              <h4 className="highlights-heading">Architecture &amp; Key Innovations:</h4>
+              <ul className="highlights-list">
+                {majorProject.keyHighlights.map((hl, i) => (
+                  <li key={i}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="check-icon">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>{hl}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Tech Tags */}
+            <div className="tech-tags-list">
+              {majorProject.tags.map((t) => (
+                <span key={t} className="tech-tag">
+                  {t}
+                </span>
+              ))}
+            </div>
+
+            {/* Research Paper Link CTA */}
+            {majorProject.researchLink && (
+              <div className="major-action-row">
+                <a
+                  href={majorProject.researchLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="paper-btn"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  <span>Read Published Research Paper on ResearchGate</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                  </svg>
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Featured Projects Grid */}
-      <div className="projects-grid">
-        {filteredProjects.map((p: Project) => {
-          const isExpanded = expandedId === p.name;
-          return (
-            <article key={p.name} className="project-editorial-card">
-              <div className="card-top-badges">
-                <div className="badges-left">
-                  {p.badge && <span className="project-award-badge">{p.badge}</span>}
-                  <span className={`domain-badge domain-${p.domain}`}>{p.domain}</span>
-                </div>
-                <span className="project-status-pill">{p.status}</span>
+      {/* ── ADDITIONAL PROJECTS (Luminary & Healthcare Chatbot) ── */}
+      <div className="sub-projects-section">
+        <h3 className="sub-projects-title">Other Selected Works</h3>
+        <div className="projects-grid">
+          {otherProjects.map((p) => (
+            <div key={p.id} className="project-card">
+              <div className="card-top">
+                <span className="card-badge">{p.badge}</span>
+                <span className="card-year">{p.year}</span>
+              </div>
+              <h4 className="card-title">{p.title}</h4>
+              <p className="card-role">{p.role}</p>
+              <p className="card-desc">{p.description}</p>
+
+              <div className="card-highlights">
+                {p.keyHighlights.map((h, idx) => (
+                  <div key={idx} className="card-hl-item">
+                    <span className="hl-arrow">›</span>
+                    <span>{h}</span>
+                  </div>
+                ))}
               </div>
 
-              <div className="card-body">
-                <h3 className="project-card-title">
-                  {p.name}
-                  {p.repo && (
-                    <a
-                      href={p.repo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="title-ext-link"
-                      aria-label={`Open ${p.name} repository`}
-                    >
-                      ↗
-                    </a>
-                  )}
-                </h3>
-
-                <p className="project-card-kind">{p.kind}</p>
-                <p className="project-card-blurb">{p.blurb}</p>
-
-                {/* Architecture Flow visualization */}
-                {p.architecture && p.architecture.length > 0 && (
-                  <div className="project-arch-flow" aria-label="Architecture flow">
-                    <span className="flow-title">PIPELINE:</span>
-                    <div className="flow-steps">
-                      {p.architecture.map((step, idx) => (
-                        <span key={step} className="flow-node">
-                          <code>{step}</code>
-                          {idx < p.architecture!.length - 1 && <span className="flow-arrow">→</span>}
-                        </span>
-                      ))}
+              {p.metrics && (
+                <div className="card-mini-metrics">
+                  {p.metrics.map((m) => (
+                    <div key={m.label} className="mini-m">
+                      <span className="mm-v">{m.value}</span>
+                      <span className="mm-l">{m.label}</span>
                     </div>
-                  </div>
-                )}
-
-                {/* Tech Stack Pills */}
-                <div className="project-stack-tags">
-                  {p.stack.map((tech) => (
-                    <span key={tech} className="tech-tag">
-                      {tech}
-                    </span>
                   ))}
                 </div>
+              )}
 
-                {/* Expandable Case Study Section */}
-                <div className="card-case-study-toggle">
-                  <button
-                    className="toggle-accordion-btn"
-                    onClick={() => setExpandedId(isExpanded ? null : p.name)}
-                    aria-expanded={isExpanded}
-                  >
-                    <span>{isExpanded ? 'Hide Architecture & Analysis' : 'Explore Architecture & Decisions'}</span>
-                    <span className={`accordion-caret ${isExpanded ? 'rotated' : ''}`}>↓</span>
-                  </button>
-                </div>
-
-                {isExpanded && (
-                  <div className="case-study-drawer">
-                    <div className="drawer-section">
-                      <h4 className="drawer-heading">// THE PROBLEM STATEMENT</h4>
-                      <p className="drawer-text">{p.problem}</p>
-                    </div>
-
-                    <div className="drawer-section">
-                      <h4 className="drawer-heading">// ARCHITECTURAL DECISIONS</h4>
-                      <ul className="drawer-decisions-list">
-                        {p.decisions.map((dec, i) => (
-                          <li key={i}>
-                            <span className="bullet-indicator">✓</span>
-                            <span>{dec}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {p.metrics && (
-                      <div className="drawer-metric-pill">
-                        <span className="metric-label">KEY GUARANTEE:</span>
-                        <span className="metric-value">{p.metrics}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Card Footer Links */}
-              <div className="card-footer-actions">
-                {p.links?.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="card-action-link"
-                  >
-                    <span>{link.label}</span>
-                    <span className="link-arrow">↗</span>
-                  </a>
+              <div className="card-tech-pills">
+                {p.tags.map((t) => (
+                  <span key={t} className="card-tech-pill">
+                    {t}
+                  </span>
                 ))}
-                {p.repo && (
-                  <a
-                    href={p.repo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="card-action-link secondary"
-                  >
-                    <span>Source Code</span>
-                    <span className="link-arrow">↗</span>
-                  </a>
-                )}
               </div>
-            </article>
-          );
-        })}
-      </div>
-
-      {/* Real-Time GitHub Repositories Showcase */}
-      <div className="live-github-section">
-        <div className="live-github-header">
-          <div className="live-title-wrap">
-            <span className="live-indicator-dot" />
-            <h3 className="live-section-title">
-              LIVE GITHUB REPOSITORY FEED <em>@jesicasuthar</em>
-            </h3>
-          </div>
-
-          <div className="live-search-wrap">
-            <input
-              type="text"
-              placeholder="Search repositories..."
-              value={repoSearch}
-              onChange={(e) => setRepoSearch(e.target.value)}
-              className="gh-search-input"
-            />
-            <a
-              href={`${GH}?tab=repositories`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="gh-view-all-link"
-            >
-              <span>View all on GitHub</span>
-              <span>↗</span>
-            </a>
-          </div>
+            </div>
+          ))}
         </div>
-
-        {ghStatus === 'loading' && (
-          <div className="live-status-message">
-            <span className="spinner" />
-            <span>Connecting to GitHub API...</span>
-          </div>
-        )}
-
-        {ghStatus === 'error' && (
-          <div className="live-status-message error">
-            <p>GitHub API rate limit reached or offline.</p>
-            <a href={`${GH}?tab=repositories`} target="_blank" rel="noopener noreferrer" className="retry-link">
-              Browse directly on GitHub ↗
-            </a>
-          </div>
-        )}
-
-        {ghStatus === 'ok' && (
-          <div className="repos-grid">
-            {displayedRepos.slice(0, 6).map((repo) => (
-              <a
-                key={repo.name}
-                href={repo.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="repo-mini-card"
-              >
-                <div className="repo-top">
-                  <span className="repo-folder-icon">📁</span>
-                  <span className="repo-name">{repo.name}</span>
-                  <span className="repo-ext-arrow">↗</span>
-                </div>
-                <p className="repo-desc">
-                  {repo.description || 'Intelligent system or application codebase.'}
-                </p>
-                <div className="repo-meta-row">
-                  {repo.language && <span className="repo-lang-badge">{repo.language}</span>}
-                  <span className="repo-stars">★ {repo.stargazers_count}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );

@@ -1,98 +1,97 @@
 import { useState, useEffect } from 'react';
 import { RESUME } from '../data';
 
-const NAV_ITEMS = [
-  { id: 'about', label: 'About', num: '01' },
-  { id: 'experience', label: 'Experience', num: '02' },
-  { id: 'projects', label: 'Works', num: '03' },
-  { id: 'research', label: 'Research', num: '04' },
-  { id: 'skills', label: 'Arsenal', num: '05' },
-  { id: 'contact', label: 'Contact', num: '06' }
-];
-
 export function Navbar() {
-  const [activeSection, setActiveSection] = useState('');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      setScrolled(window.scrollY > 30);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: '-30% 0px -60% 0px' }
-    );
-
-    NAV_ITEMS.forEach((item) => {
-      const el = document.getElementById(item.id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  const navLinks = [
+    { name: 'About', href: '#top' },
+    { name: 'Projects & Demo', href: '#projects' },
+    { name: 'Skills', href: '#skills' },
+    { name: 'Certifications', href: '#certifications' },
+    { name: 'Extracurricular', href: '#extracurricular' },
+    { name: 'Experience', href: '#experience' },
+    { name: 'Contact', href: '#contact' }
+  ];
 
   return (
-    <header className={`navbar-header ${scrolled ? 'scrolled' : ''}`}>
-      <div className="navbar-container">
-        <a href="#top" className="navbar-logo" aria-label="Jesica Suthar home">
-          <span className="logo-text">JS</span>
-          <span className="logo-dot" />
+    <header className={`portfolio-nav ${scrolled ? 'nav-scrolled' : ''}`}>
+      <div className="nav-container">
+        <a href="#top" className="nav-brand">
+          <span className="brand-dot" />
+          <span className="brand-name">Jesica Suthar</span>
+          <span className="brand-badge">AI &amp; RPA</span>
         </a>
 
-        <div className="navbar-status-badge">
-          <span className="pulse-dot" />
-          <span className="status-text">AVAILABLE FOR ROLES</span>
-        </div>
-
-        <nav className={`navbar-nav ${mobileMenuOpen ? 'open' : ''}`} aria-label="Main Navigation">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="nav-num">{item.num}</span>
-              <span className="nav-label">{item.label}</span>
+        {/* Desktop nav links */}
+        <nav className="nav-links">
+          {navLinks.map((link) => (
+            <a key={link.name} href={link.href} className="nav-link">
+              {link.name}
             </a>
           ))}
-
-          <a
-            href={RESUME}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-resume-btn"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <span>Resume</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 17l9.2-9.2M17 17V7H7" />
-            </svg>
-          </a>
         </nav>
 
-        <button
-          className="mobile-burger-btn"
-          aria-expanded={mobileMenuOpen}
-          aria-label="Toggle navigation menu"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          <span className={`burger-line ${mobileMenuOpen ? 'active' : ''}`} />
-          <span className={`burger-line ${mobileMenuOpen ? 'active' : ''}`} />
-        </button>
+        <div className="nav-actions">
+          <a
+            href={RESUME}
+            download="Jesica-Suthar-Resume.pdf"
+            className="nav-btn-resume"
+            title="Download Jesica's Resume"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <span>Resume</span>
+          </a>
+
+          {/* Mobile hamburger */}
+          <button
+            className="nav-toggle"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle navigation"
+          >
+            <span className={`toggle-line ${mobileOpen ? 'open' : ''}`} />
+            <span className={`toggle-line ${mobileOpen ? 'open' : ''}`} />
+            <span className={`toggle-line ${mobileOpen ? 'open' : ''}`} />
+          </button>
+        </div>
       </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="mobile-drawer">
+          {navLinks.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              className="mobile-link"
+              onClick={() => setMobileOpen(false)}
+            >
+              {link.name}
+            </a>
+          ))}
+          <a
+            href={RESUME}
+            download="Jesica-Suthar-Resume.pdf"
+            className="mobile-resume-btn"
+            onClick={() => setMobileOpen(false)}
+          >
+            Download Resume (PDF)
+          </a>
+        </div>
+      )}
     </header>
   );
 }
