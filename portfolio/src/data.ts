@@ -414,7 +414,7 @@ export const EXTRACURRICULARS: ExtracurricularItem[] = [
     id: 'nss-volunteer',
     role: 'Community Volunteer',
     organization: 'National Service Scheme (NSS)',
-    period: 'Active Member',
+    period: '2023–25',
     badge: 'Social Impact',
     highlights: [
       'Dedicated volunteering hours to community welfare drives, cleanliness initiatives, and public awareness campaigns.',
