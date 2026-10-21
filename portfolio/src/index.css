@@ -447,25 +447,28 @@ button {
 }
 
 .gazi-role {
-  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  font-size: clamp(1.05rem, 2.1vw, 1.42rem);
   font-weight: 600;
   color: var(--accent-cyan);
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 10px 14px;
   margin: 0 0 20px;
+  line-height: 1.4;
 }
 
 .gazi-role-bar {
   display: inline-block;
-  width: 20px;
+  width: 18px;
   height: 2px;
   background: var(--text-dim);
+  opacity: 0.6;
 }
 
 .gazi-bio {
-  font-size: 1.12rem;
-  line-height: 1.7;
+  font-size: 1.1rem;
+  line-height: 1.75;
   color: var(--text-muted);
   max-width: 680px;
   margin: 0 0 28px;
@@ -474,6 +477,19 @@ button {
 .gazi-highlight {
   color: #fff;
   font-weight: 600;
+}
+
+.gazi-bio-link {
+  color: var(--accent-cyan);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+
+.gazi-bio-link:hover {
+  color: #ffffff;
+  text-decoration-color: #ffffff;
 }
 
 /* Hero Stats Row */

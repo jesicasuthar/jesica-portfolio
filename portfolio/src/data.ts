@@ -1,5 +1,6 @@
-export const GH = 'https://github.com/';
+export const GH = 'https://github.com/jesicasuthar';
 export const LINKEDIN = 'https://www.linkedin.com/in/jesica-suthar';
+export const MEDIUM = 'https://medium.com/@jesica.s.suthar';
 export const RESEARCHGATE = 'https://www.researchgate.net/publication/403886515_A_System_and_Method_for_Concurrent_Multi-Disease_Prediction_via_Knowledge-Guided_Graph_Neural_Networks_and_Ensemble_Learning';
 export const RESUME = '/JesicaSuthar%20Resume.pdf';
 export const EMAIL = 'jesica.s.suthar@gmail.com';

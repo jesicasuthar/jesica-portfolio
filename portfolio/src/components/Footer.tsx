@@ -1,4 +1,4 @@
-import { EMAIL, PHONE, LOCATION, GH, LINKEDIN, RESEARCHGATE, RESUME } from '../data';
+import { EMAIL, PHONE, LOCATION, GH, LINKEDIN, MEDIUM, RESEARCHGATE, RESUME } from '../data';
 
 export function Footer() {
   const scrollToTop = () => {
@@ -12,7 +12,7 @@ export function Footer() {
           <span className="cta-pill">Get In Touch</span>
           <h2 className="cta-title">Let’s collaborate on something extraordinary.</h2>
           <p className="cta-desc">
-            Whether you're looking for an AI engineer to develop cutting-edge GenAI/GNN pipelines, automate critical business workflows in UiPath, or collaborate on clinical AI research — I’d love to connect.
+            Whether you're looking for an engineer to automate critical workflows in UiPath, fortify systems through vulnerability assessments &amp; VAPT, or develop resilient software — I’d love to connect.
           </p>
 
           <div className="contact-action-buttons">
@@ -61,6 +61,11 @@ export function Footer() {
           {LINKEDIN && (
             <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="foot-icon-link" title="LinkedIn">
               LinkedIn
+            </a>
+          )}
+          {MEDIUM && (
+            <a href={MEDIUM} target="_blank" rel="noopener noreferrer" className="foot-icon-link" title="Medium Profile">
+              Medium
             </a>
           )}
           <a href={RESEARCHGATE} target="_blank" rel="noopener noreferrer" className="foot-icon-link" title="ResearchGate Publication">
